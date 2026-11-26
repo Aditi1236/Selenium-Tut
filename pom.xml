@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>SeleniumTut</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.class>org.example.SeleniumTut</main.class>
+        <selenium.version>4.52.0</selenium.version>
+        <testng.version>7.10.2</testng.version>
+        <allure.version>2.29.0</allure.version>
+        <aspectj.version>1.9.26</aspectj.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- Page actions record steps without recording entered values. -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-java-commons</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+
+        <!-- ==================== Selenium WebDriver ==================== -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+
+        <!-- ==================== TestNG ==================== -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ==================== Allure TestNG ==================== -->
+        <!--
+            allure-testng provides:
+              - AllureTestNg listener (auto-registered via ServiceLoader)
+              - @Epic, @Feature, @Story, @Description, @Severity annotations
+              - @Step aspect-woven method tracing
+              - Allure.addAttachment() for screenshots
+        -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ==================== AspectJ Weaver ==================== -->
+        <!--
+            Required at test runtime so @Step-annotated methods are
+            intercepted and recorded as Allure steps.
+            Also passed as -javaagent to Surefire below.
+        -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ==================== JUnit 5 (kept for existing smoke test) ==================== -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.3</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Compiler plugin: enforce Java 17 compatibility -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+            </plugin>
+
+            <!-- Exec plugin: run main class with mvn exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <mainClass>${main.class}</mainClass>
+                </configuration>
+            </plugin>
+
+            <!--
+                Surefire plugin:
+                  - Forces TestNG provider (not JUnit auto-detect)
+                  - Injects aspectjweaver as javaagent (required for @Step AOP)
+                  - Runs testng.xml suite
+                  - Excludes old JUnit placeholder test
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>3.5.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <!-- AspectJ weaver as javaagent enables @Step AOP interception. JDK 17+ flags required. -->
+                    <systemPropertyVariables>
+                        <jdk.net.unixdomain.tmpdir>.</jdk.net.unixdomain.tmpdir>
+                    </systemPropertyVariables>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --enable-native-access=ALL-UNNAMED
+                    </argLine>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <excludes>
+                        <exclude>**/SeleniumTutTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!--
+                Allure Maven plugin:
+                  mvn allure:report  → generate HTML report from target/allure-results
+                  mvn allure:serve   → generate + open report in browser (recommended)
+            -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.14.0</version>
+                <configuration>
+                    <reportVersion>${allure.version}</reportVersion>
+                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+                    <reportDirectory>${project.basedir}/.reports/allure</reportDirectory>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

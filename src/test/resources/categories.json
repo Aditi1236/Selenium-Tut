@@ -1,0 +1,6 @@
+[
+ {"name":"Browser or driver setup","matchedStatuses":["broken"],"messageRegex":"(?s).*(SessionNotCreated|NoSuchDriver|Unable to obtain|driver executable).*"},
+ {"name":"Element or navigation timeout","matchedStatuses":["broken","failed"],"messageRegex":"(?s).*(TimeoutException|Expected condition failed|Timed out).*"},
+ {"name":"Assertion mismatch","matchedStatuses":["failed"],"traceRegex":"(?s).*AssertionError.*"},
+ {"name":"Other automation errors","matchedStatuses":["broken"]}
+]

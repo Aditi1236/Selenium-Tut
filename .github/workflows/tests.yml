@@ -1,0 +1,68 @@
+name: Browser automation
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  chrome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate Maven project
+        id: project
+        shell: bash
+        run: |
+          if [ -f pom.xml ]; then echo 'directory=.' >> "$GITHUB_OUTPUT";
+          elif [ -f SeleniumTut/pom.xml ]; then echo 'directory=SeleniumTut' >> "$GITHUB_OUTPUT";
+          else echo 'pom.xml not found'; exit 1; fi
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore Allure history
+        uses: actions/cache/restore@v4
+        with:
+          path: '**/.reports/allure/history'
+          key: allure-history-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            allure-history-${{ github.ref_name }}-
+      - name: Dashboard backend tests
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: python -m unittest discover -s dashboard/tests -v
+      - name: Run headless Chrome suite
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: |
+          python -m http.server 8768 --bind 127.0.0.1 --directory dashboard/tests/fixtures > fixture-server.log 2>&1 &
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8768/web-form.html > /dev/null; then break; fi
+            sleep 1
+          done
+          mvn -B -ntp clean test -Dheadless=true -Dbrowser=chrome -DbaseUrl=http://127.0.0.1:8768/web-form.html
+      - name: Generate Allure report
+        if: always()
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: mvn -B -ntp allure:report
+      - name: Save history
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: '**/.reports/allure/history'
+          key: allure-history-${{ github.ref_name }}-${{ github.run_id }}
+      - name: Upload reports and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-test-evidence
+          path: |
+            **/target/surefire-reports/**
+            **/target/allure-results/**
+            **/.reports/allure/**
+          include-hidden-files: true
+          if-no-files-found: warn

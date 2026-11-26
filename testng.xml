@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<!--
+    TestNG Suite Configuration for SeleniumTut
+    ============================================
+    Groups:
+      - smoke    : Fast, non-browser sanity checks
+      - ui       : Full browser-based Selenium tests (require Chrome)
+
+    To run only smoke tests:   mvn test -Dgroups=smoke
+    To run only UI tests:      mvn test -Dgroups=ui
+    To run everything:         mvn test
+    To generate Allure report: mvn allure:serve   (opens browser automatically)
+                               mvn allure:report  (generates to target/allure-report)
+-->
+<suite name="SeleniumTut-Suite" verbose="1" parallel="false" configfailurepolicy="continue">
+
+    <!--
+        Listeners registered for the entire suite:
+          - ScreenshotListener : captures PNG on failure + attaches to Allure
+        Note: AllureTestNg listener is auto-registered by allure-testng via
+              Java ServiceLoader, so it does NOT need to be listed here.
+    -->
+    <listeners>
+        <listener class-name="org.example.listeners.ReportListener"/>
+        <listener class-name="org.example.listeners.ScreenshotListener"/>
+    </listeners>
+
+    <test name="Smoke Tests">
+        <groups>
+            <run>
+                <include name="smoke"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.example.tests.SmokeTest"/>
+        </classes>
+    </test>
+
+    <test name="Web Form UI Tests">
+        <groups>
+            <run>
+                <include name="ui"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="org.example.tests.NavigationTest"/>
+            <class name="org.example.tests.InputFieldTest"/>
+            <class name="org.example.tests.CheckboxRadioDropdownTest"/>
+            <class name="org.example.tests.FormSubmitTest"/>
+            <class name="org.example.tests.AdvancedInputTest"/>
+        </classes>
+    </test>
+
+</suite>

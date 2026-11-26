@@ -1,0 +1,12 @@
+target/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+.dashboard/
+.reports/
+.allure/
+__pycache__/
+*.pyc

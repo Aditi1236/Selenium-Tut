@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SeleniumTut · Test control room</title><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script></head>
+<body>
+<a class="skip-link" href="#overview">Skip to main content</a>
+<aside class="sidebar">
+ <a class="brand" href="/" aria-label="SeleniumTut home"><span class="brand-mark">S<span>✓</span></span><span>Selenium<span class="brand-light">Tut</span><small>AUTOMATION WORKSPACE</small></span></a>
+ <div class="nav-label">WORKSPACE</div>
+ <a class="nav-item active" href="#overview"><span>▦</span> Overview <span class="nav-dot"></span></a>
+ <a class="nav-item" href="#results"><span>☷</span> Test results</a>
+ <a class="nav-item" href="#history"><span>◷</span> Run history</a>
+ <a class="nav-item" href="#execution"><span>⌘</span> Execution log</a>
+ <div class="sidebar-bottom"><span class="local-dot"></span> Local workspace<small>Java · Selenium · TestNG</small></div>
+</aside>
+<main>
+ <header class="topbar"><span>Workspace <span class="slash">/</span> <strong id="page-context">Overview</strong></span><span class="local-badge" id="connection-status" role="status"><i></i> CONNECTING</span></header>
+ <nav class="mobile-nav" aria-label="Workspace sections"><a href="#overview">Overview</a><a href="#results">Results</a><a href="#history">History</a><a href="#execution">Live log</a></nav>
+ <div class="content" id="overview" tabindex="-1">
+  <section class="page-heading"><div><div class="eyebrow">QUALITY AT A GLANCE</div><h1>Test control room<span>.</span></h1><p>Run browser checks and turn test evidence into clear decisions.</p></div><a id="allure-link" class="button secondary disabled" aria-disabled="true" target="_blank" rel="noopener">Open Allure <span>↗</span></a></section>
+  <div id="notice" class="notice" role="status" hidden></div>
+  <section class="metrics" aria-label="Run summary">
+   <article class="metric"><span>Total tests</span><strong id="total">—</strong><small id="summary-label">No run selected</small></article>
+   <article class="metric"><span><i class="dot passed"></i> Passed</span><strong id="passed">—</strong><small>Expected behavior verified</small></article>
+   <article class="metric"><span><i class="dot failed"></i> Failed / broken</span><strong id="failed">—</strong><small>Results needing attention</small></article>
+   <article class="metric"><span><i class="dot skipped"></i> Skipped</span><strong id="skipped">—</strong><small>Tests that did not execute</small></article>
+   <article class="metric"><span>Pass rate</span><strong id="rate">—</strong><small>Of reported test results</small></article>
+   <article class="metric"><span>Run duration</span><strong id="duration">—</strong><small>Including report generation</small></article>
+  </section>
+  <div class="workspace-grid">
+   <section class="panel launch-panel"><div class="panel-heading"><div><h2>Launch a test run</h2><p>Your browser. Your scope.</p></div><span class="panel-icon">↗</span></div>
+    <form id="run-form">
+     <div class="form-pair"><label>Browser<select name="browser"><option value="chrome">Google Chrome</option><option value="edge">Microsoft Edge</option><option value="firefox">Mozilla Firefox</option></select></label><label>Test scope<select name="group"><option value="all">All tests</option><option value="smoke">Smoke · no browser</option><option value="ui">Browser tests</option></select></label></div>
+     <div class="target-control"><div class="label-row"><label for="target-url">Target form URL</label><button id="use-local" class="text-button" type="button" title="Use the bundled form without external network dependencies">Use local sample</button></div><input id="target-url" name="baseUrl" type="url" required value="https://www.selenium.dev/selenium/web/web-form.html" spellcheck="false"></div>
+     <div class="form-pair"><label>Window size<select name="windowSize"><option>1440x1000</option><option>1920x1080</option><option>1280x800</option><option>390x844</option></select></label><label class="switch-label">Browser mode<span class="switch-row"><input type="checkbox" name="headless" checked><span>Headless</span></span></label></div>
+     <details class="advanced"><summary>Advanced settings</summary><div class="form-pair"><label>Element timeout (seconds)<input type="number" name="timeout" min="1" max="120" value="15" required></label><label>Page timeout (seconds)<input type="number" name="pageTimeout" min="1" max="180" value="45" required></label></div></details>
+     <button id="run-button" class="button primary" type="submit" disabled><span aria-hidden="true">▶</span><span id="run-label">Run tests</span><span class="button-arrow" aria-hidden="true">→</span></button><p class="form-note">Runs locally through Maven. One run at a time.</p>
+    </form>
+   </section>
+   <section class="panel activity-panel"><div class="panel-heading"><div><h2>Execution overview</h2><p id="run-subtitle">Your next quality checkpoint starts here.</p></div><span id="run-status" class="badge neutral">Ready</span></div>
+    <div class="execution-body"><div class="ring" id="pass-ring"><div><strong id="ring-value">—</strong><span>PASS RATE</span></div></div><div class="execution-info"><span class="eyebrow" id="phase-label">READY WHEN YOU ARE</span><h3 id="execution-title">A clear view of every run.</h3><p id="execution-description">Choose a browser and test scope, then run your suite. Results and evidence appear here automatically.</p><div class="legend"><span><i class="dot passed"></i> Passed</span><span><i class="dot failed"></i> Failed</span><span><i class="dot skipped"></i> Skipped</span></div></div></div>
+    <div class="activity-footer"><span id="progress-text">No tests have run in this dashboard yet.</span><span id="run-id">AWAITING RUN</span></div><div id="activity-track" class="activity-track"><div></div></div>
+   </section>
+  </div>
+  <section class="panel results-panel" id="results"><div class="panel-heading"><div><h2>Test results <span id="result-count" class="count">0</span></h2><p>From the selected run, with details one click away.</p></div><div class="filters"><input id="search" type="search" placeholder="Search tests or features…" aria-label="Search tests"><select id="status-filter" aria-label="Filter results by status"><option value="all">All statuses</option><option value="passed">Passed</option><option value="failed">Failed</option><option value="broken">Broken</option><option value="skipped">Skipped</option></select></div></div>
+   <div class="table-scroll"><table><thead><tr><th>TEST CASE</th><th>FEATURE</th><th>STATUS</th><th>DURATION</th><th><span class="sr-only">Details</span></th></tr></thead><tbody id="result-rows"></tbody></table></div><div class="empty-state" id="results-empty"><span>☷</span><h3>Every result has a story.</h3><p>Run a suite to see test outcomes, timings, and failure evidence.</p></div>
+  </section>
+  <div class="bottom-grid"><section class="panel" id="history"><div class="panel-heading"><div><h2>Recent runs</h2><p>Pick a run to inspect its results.</p></div><span class="panel-icon">◷</span></div><div id="history-list" class="history-list"><p class="empty-inline">Loading run history…</p></div></section>
+  <section class="panel log-panel" id="execution"><div class="panel-heading"><div><h2>Execution log</h2><p>Live Maven output from the selected run.</p></div><button id="log-toggle" class="text-button" aria-pressed="true">Auto-scroll on</button></div><pre id="log-output" tabindex="0" aria-label="Execution log">Waiting for a test run…</pre></section></div>
+  <footer class="page-footer"><span><span class="footer-mark">✓</span> SeleniumTut <span class="muted">/ Built for reliable feedback.</span></span><span>LOCAL EXECUTION · REAL RESULTS</span></footer>
+ </div>
+</main>
+<dialog id="test-dialog" aria-labelledby="detail-title"><div class="dialog-heading"><div><div class="eyebrow">TEST DETAILS</div><h2 id="detail-title"></h2></div><button id="close-dialog" class="icon-button" aria-label="Close test details">×</button></div><div id="detail-content"></div></dialog>
+</body></html>
+
